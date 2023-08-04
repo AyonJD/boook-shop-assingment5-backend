@@ -7,6 +7,7 @@ import { BOOK_FILTER_FIELDS } from './book.constant'
 import { IPaginationOption } from '../../../interfaces/sharedInterface'
 import { paginationFields } from '../../../constant/shared.constant'
 import httpStatus from 'http-status'
+import { JwtPayload } from 'jsonwebtoken'
 
 const createBook = catchAsync(async (req: Request, res: Response) => {
   const bookData = req.body
@@ -33,7 +34,35 @@ const getAllBooks = catchAsync(async (req: Request, res: Response) => {
   sendSuccessResponse(res, responseData)
 })
 
+const getBookById = catchAsync(async (req: Request, res: Response) => {
+  const bookId = req.params.bookId
+  const book = await BookService.getBookById(bookId)
+  const responseData = {
+    data: book,
+    message: 'Book fetched successfully',
+  }
+  sendSuccessResponse(res, responseData)
+})
+
+const updateBookById = catchAsync(async (req: Request, res: Response) => {
+  const bookId = req.params.bookId
+  const bookData = req.body
+  const user = req.user
+  const book = await BookService.updateBookById(
+    bookId,
+    bookData,
+    user as JwtPayload
+  )
+  const responseData = {
+    data: book,
+    message: 'Book updated successfully',
+  }
+  sendSuccessResponse(res, responseData)
+})
+
 export const BookController = {
   createBook,
   getAllBooks,
+  getBookById,
+  updateBookById,
 }

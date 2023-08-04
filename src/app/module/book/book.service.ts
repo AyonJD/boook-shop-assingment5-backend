@@ -9,6 +9,9 @@ import {
 import { BOOK_SEARCH_FIELDS } from './book.constant'
 import paginationHelper from '../../helpers/paginationHelper'
 import { SortOrder } from 'mongoose'
+import { IUser } from '../user/user.interface'
+import { JwtPayload } from 'jsonwebtoken'
+import UserModel from '../user/user.model'
 
 const createBook = async (bookData: IBook): Promise<IBook> => {
   const isExistBook = await BookModel.findByTitle(bookData.title)
@@ -83,7 +86,51 @@ const getAllBooks = async (
   return responseData
 }
 
+const getBookById = async (id: string): Promise<IBook> => {
+  const isExisting = await BookModel.findById(id)
+  if (!isExisting) throw new ApiError(httpStatus.NOT_FOUND, 'Book not found')
+
+  return isExisting
+}
+
+const updateBookById = async (
+  id: string,
+  bookData: Partial<IBook>,
+  user: JwtPayload
+): Promise<IBook> => {
+  const book = await getBookById(id)
+  if (!book) throw new ApiError(httpStatus.NOT_FOUND, 'Book not found')
+
+  const retriveUser = await UserModel.isUserExist(user.email)
+  if (!retriveUser) throw new ApiError(httpStatus.NOT_FOUND, 'User not found')
+
+  if (
+    !retriveUser._id ||
+    book.publishedBy.toString() !== retriveUser._id.toString()
+  )
+    throw new ApiError(
+      httpStatus.FORBIDDEN,
+      'You are not authorized to update this book'
+    )
+
+  const updatedBook = await BookModel.findOneAndUpdate({ _id: id }, bookData, {
+    new: true,
+  }).populate('publishedBy')
+
+  if (!updatedBook)
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'Something went wrong while updating the book'
+    )
+
+  return updatedBook
+}
+
+// const
+
 export const BookService = {
   createBook,
   getAllBooks,
+  getBookById,
+  updateBookById,
 }

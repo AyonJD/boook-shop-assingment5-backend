@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Schema, model } from 'mongoose'
 import { IBook, IBookModel } from './book.interface'
+import ApiError from '../../../errors/ApiError'
+import httpStatus from 'http-status'
 
 const BookSchema = new Schema<IBook>(
   {
@@ -42,6 +45,21 @@ BookSchema.statics.findByAuthor = async function (
   const books = await this.find({ author })
   return books
 }
+
+BookSchema.pre('findOneAndUpdate', async function (next) {
+  const book = this as any
+
+  if (book._update?.title) {
+    const sameTitle = await BookModel.findOne({
+      title: book._update?.title,
+    })
+
+    if (sameTitle) {
+      throw new ApiError(httpStatus.CONFLICT, 'Book title already exists')
+    }
+  }
+  next()
+})
 
 const BookModel = model<IBook, IBookModel>('Book', BookSchema)
 export default BookModel

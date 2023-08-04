@@ -2,6 +2,7 @@
 import { Model } from 'mongoose'
 
 export interface IUser {
+  _id?: string
   name: {
     first: string
     last: string
