@@ -1,14 +1,14 @@
+/* eslint-disable no-console */
 import mongoose from 'mongoose'
 import app from './app'
 import config from './config'
-import { errorLogger, successLogger } from './shared/logger'
 import { Server } from 'http'
 
 let server: Server
 
 /* This code is setting up a listener for uncaught exception. It's a synchronous process */
 process.on('uncaughtException', error => {
-  errorLogger.error(error)
+  console.log(error)
   process.exit(1)
 })
 
@@ -16,7 +16,7 @@ process.on('uncaughtException', error => {
 process.on('unhandledRejection', error => {
   if (server) {
     server.close(() => {
-      errorLogger.error(error)
+      console.log(error)
       process.exit(1)
     })
   }
@@ -31,7 +31,7 @@ and needs to be scaled down or updated. */
 process.on('SIGTERM', () => {
   if (server) {
     server.close(() => {
-      successLogger.info('Process terminated')
+      console.log('Process terminated')
     })
   }
 })
@@ -39,13 +39,13 @@ process.on('SIGTERM', () => {
 async function databaseConnection() {
   try {
     await mongoose.connect(config.database_string as string)
-    successLogger.info('Database connected successfully')
+    console.log('Database connected successfully')
 
     server = app.listen(config.port, () => {
-      successLogger.info(`Server is listening on port ${config.port}`)
+      console.log(`Server is listening on port ${config.port}`)
     })
   } catch (error) {
-    errorLogger.error('Error while connecting database: ', error)
+    console.log('Error while connecting database: ', error)
   }
 }
 

@@ -4,7 +4,6 @@ import config from '../../config'
 import { IGenericErrorMessage } from '../../interfaces/errorInterface'
 import ApiError from '../../errors/ApiError'
 import handleMongooseValidationError from '../../errors/handleMongooseValidationError'
-import { errorLogger } from '../../shared/logger'
 import { ZodError } from 'zod'
 import handleZodValidationError from '../../errors/handleZodValidationError'
 import handleCastValidationError from '../../errors/handleCastValidationError'
@@ -14,7 +13,7 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
   if (config.env === 'development') {
     console.log(error)
   } else {
-    errorLogger.error(error)
+    console.log(error)
   }
 
   const status = 'false'
