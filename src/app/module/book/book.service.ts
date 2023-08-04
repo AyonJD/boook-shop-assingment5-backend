@@ -65,6 +65,7 @@ const getAllBooks = async (
   }
 
   const result = await BookModel.find(whereCondition)
+    .populate('publishedBy')
     .sort(sortCondition)
     .skip(skip)
     .limit(limit as number)
