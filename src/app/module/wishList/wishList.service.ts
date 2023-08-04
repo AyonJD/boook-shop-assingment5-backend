@@ -45,6 +45,22 @@ const addToWishList = async (wishListData: IWishList) => {
   return wishList
 }
 
+const getWishListOfUser = async (userId: string) => {
+  const wishList = await WishListModel.findOne({ userId }).populate([
+    {
+      path: 'bookId',
+      model: 'Book',
+    },
+    {
+      path: 'userId',
+      model: 'User',
+    },
+  ])
+  if (!wishList) throw new ApiError(httpStatus.NOT_FOUND, 'Wishlist not found')
+  return wishList
+}
+
 export const WishListService = {
   addToWishList,
+  getWishListOfUser,
 }
