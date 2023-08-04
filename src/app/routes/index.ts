@@ -4,6 +4,7 @@ import { BookRoute } from '../module/book/book.route'
 import { WishListRoute } from '../module/wishList/wishList.route'
 import { ReadListRoute } from '../module/readList/readList.route'
 import { CompleteListRoute } from '../module/completeList/completeList.route'
+import { ReviewRoute } from '../module/review/review.route'
 
 const router = express.Router()
 
@@ -27,6 +28,10 @@ const routes = [
   {
     path: '/completeList',
     route: CompleteListRoute,
+  },
+  {
+    path: '/review',
+    route: ReviewRoute,
   },
 ]
 
