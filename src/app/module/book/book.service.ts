@@ -126,11 +126,34 @@ const updateBookById = async (
   return updatedBook
 }
 
-// const
+const deleteBook = async (id: string, user: JwtPayload): Promise<void> => {
+  const book = await getBookById(id)
+  if (!book) throw new ApiError(httpStatus.NOT_FOUND, 'Book not found')
+
+  const retriveUser = await UserModel.isUserExist(user.email)
+  if (!retriveUser) throw new ApiError(httpStatus.NOT_FOUND, 'User not found')
+
+  if (
+    !retriveUser._id ||
+    book.publishedBy.toString() !== retriveUser._id.toString()
+  )
+    throw new ApiError(
+      httpStatus.FORBIDDEN,
+      'You are not authorized to update this book'
+    )
+
+  const deletedBook = await BookModel.findOneAndDelete({ _id: id })
+  if (!deletedBook)
+    throw new ApiError(
+      httpStatus.NOT_FOUND,
+      'Something went wrong while deleting the book'
+    )
+}
 
 export const BookService = {
   createBook,
   getAllBooks,
   getBookById,
   updateBookById,
+  deleteBook,
 }

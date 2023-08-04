@@ -60,9 +60,20 @@ const updateBookById = catchAsync(async (req: Request, res: Response) => {
   sendSuccessResponse(res, responseData)
 })
 
+const deleteBook = catchAsync(async (req: Request, res: Response) => {
+  const bookId = req.params.bookId
+  const user = req.user
+  await BookService.deleteBook(bookId, user as JwtPayload)
+  const responseData = {
+    message: 'Book deleted successfully',
+  }
+  sendSuccessResponse(res, responseData)
+})
+
 export const BookController = {
   createBook,
   getAllBooks,
   getBookById,
   updateBookById,
+  deleteBook,
 }
