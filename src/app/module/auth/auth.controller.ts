@@ -14,7 +14,7 @@ const signupUser = catchAsync(async (req: Request, res: Response) => {
     .header('Authorization', `Bearer ${accessToken}`)
     .header('Access-Control-Expose-Headers', 'Authorization')
     .json({
-      message: 'Otp sent! Check your email for verification code',
+      message: 'User Created successfully',
       success: true,
       statusCode: httpStatus.CREATED,
     })
